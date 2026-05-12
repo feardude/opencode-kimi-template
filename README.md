@@ -8,6 +8,9 @@
 
 ```
 .
+├── install.sh                         # глобальная установка скиллов/агентов/команд
+├── init-project.sh                    # bootstrap AGENTS.md + docs/ в репо
+├── opencode.json.example              # шаблон конфига с Kimi-провайдером
 ├── AGENTS.md                          # инструкция для модели (читается
 │                                       OpenCode и Claude Code; на работе —
 │                                       канонический файл, без CLAUDE.md)
@@ -42,23 +45,73 @@
         └── feature-dev.md             # /feature-dev слэш-команда
 ```
 
-## Как разворачивать на рабочем ноуте
+## Установка
 
-1. Распаковать архив в корень целевого репо.
-2. Заполнить `AGENTS.md` (секции «Project Overview», «Commands»,
-   «Architecture»). Секцию «Documentation» НЕ трогать — это и есть
-   переносимый паттерн.
-3. Заполнить `docs/architecture/README.md` (главы 1, 2, 5 обязательны).
-4. По мере работы создавать per-domain reference в
-   `docs/architecture/reference/` по шаблону `_template.md`. Каждая
-   reference перечисляет файлы/глобы под `watches:` — это триггер для
-   правила «read before / update after».
-5. Скиллы и сабагенты подхватятся автоматически:
-   - **OpenCode** читает `.claude/skills/` (Claude-compat путь) и
-     `.claude/agents/`, `.claude/commands/` — проверь в логах при первом
-     запуске. Если что-то не подцепляется, продублируй в `.opencode/skills/`,
-     `.opencode/agents/`, `.opencode/commands/` симлинками.
-   - **Claude Code** (если будет) читает все три из коробки.
+Два слоя: **глобальный** (один раз на ноут — скиллы, сабагенты, команды)
+и **per-project** (в каждом рабочем репо — `AGENTS.md` и
+`docs/architecture/`).
+
+### 1. Глобально, один раз на ноут
+
+```bash
+git clone https://github.com/feardude/opencode-kimi-template.git ~/opencode-kimi-template
+cd ~/opencode-kimi-template
+./install.sh
+```
+
+Скрипт идемпотентно копирует:
+- `.claude/skills/`   → `~/.config/opencode/skills/`
+- `.claude/agents/`   → `~/.config/opencode/agents/`
+- `.claude/commands/` → `~/.config/opencode/commands/`
+
+После — настроить эндпоинт Kimi (если ещё нет `~/.config/opencode/opencode.json`):
+
+```bash
+cp opencode.json.example ~/.config/opencode/opencode.json
+# отредактировать baseURL и apiKey под on-prem-эндпоинт Райфа
+```
+
+### 2. В каждом рабочем репо
+
+```bash
+cd /path/to/work-repo
+~/opencode-kimi-template/init-project.sh
+```
+
+Скрипт добавляет (только если ещё нет — не перезатирает):
+- `AGENTS.md` — заполнить TODO под проект
+- `docs/architecture/README.md` — главы 1, 2, 5 минимум
+- `docs/architecture/reference/_template.md` — копировать в
+  `<domain>.md` по мере появления доменов
+
+Передать `--force`, чтобы перезатереть.
+
+После запуска — закоммитить эти файлы в репо. Дальше команда работает с
+ними как с обычной документацией.
+
+### 3. Обновление
+
+```bash
+cd ~/opencode-kimi-template
+git pull
+./install.sh   # доливает новые скиллы/агентов/команды
+```
+
+### Масштабирование на команду
+
+Дай коллегам три команды:
+
+```bash
+git clone https://github.com/feardude/opencode-kimi-template.git ~/opencode-kimi-template
+~/opencode-kimi-template/install.sh
+cp ~/opencode-kimi-template/opencode.json.example ~/.config/opencode/opencode.json
+# заполнить baseURL/apiKey
+```
+
+В рабочих репо — `~/opencode-kimi-template/init-project.sh` один раз.
+`AGENTS.md` и `docs/architecture/` уезжают в git того же репо, поэтому
+дальнейшие правки доков расходятся обычным `git pull`-ом — настройку на
+ноуте трогать не нужно.
 
 ## Главный риск — поведение Kimi
 
