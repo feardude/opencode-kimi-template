@@ -24,7 +24,9 @@ place "$SRC/docs/architecture/README.md"               "./docs/architecture/READ
 place "$SRC/docs/architecture/reference/_template.md"  "./docs/architecture/reference/_template.md"
 
 echo
-echo "Edit:"
-echo "  1. ./AGENTS.md                  — fill TODOs (Project / Commands / Architecture)"
-echo "  2. ./docs/architecture/README.md — chapters 1, 2, 5 minimum"
-echo "  3. As you go, copy reference/_template.md to reference/<domain>.md"
+echo "Next step: let the agent fill these in."
+echo "  In OpenCode (in this repo): /bootstrap-project"
+echo
+echo "Edit manually only if you prefer. As work progresses, copy"
+echo "docs/architecture/reference/_template.md to reference/<domain>.md"
+echo "on the first task that touches a new domain."

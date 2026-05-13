@@ -79,14 +79,26 @@ cd /path/to/work-repo
 ```
 
 Скрипт добавляет (только если ещё нет — не перезатирает):
-- `AGENTS.md` — заполнить TODO под проект
-- `docs/architecture/README.md` — главы 1, 2, 5 минимум
-- `docs/architecture/reference/_template.md` — копировать в
-  `<domain>.md` по мере появления доменов
+- `AGENTS.md` — скелет с TODO-блоками
+- `docs/architecture/README.md` — скелет с главами 1–7
+- `docs/architecture/reference/_template.md` — шаблон reference
 
 Передать `--force`, чтобы перезатереть.
 
-После запуска — закоммитить эти файлы в репо. Дальше команда работает с
+**Заполнение — задача агента, не твоя.** В OpenCode внутри репо запусти:
+
+```
+/bootstrap-project
+```
+
+Команда инспектирует репо (`package.json`, `Makefile`, дерево директорий,
+README), заполняет «Project Overview», «Commands», «Architecture» в
+`AGENTS.md` и обязательные главы 1, 2, 5, 7 в
+`docs/architecture/README.md`. Секцию «Documentation» в `AGENTS.md` не
+трогает — это фиксированный паттерн. Per-domain reference не создаёт —
+они пишутся лениво, на первой задаче в каждом домене.
+
+После — закоммитить заполненные файлы в репо. Дальше команда работает с
 ними как с обычной документацией.
 
 ### 3. Обновление
